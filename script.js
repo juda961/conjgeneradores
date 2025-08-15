@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modoNumber = document.getElementById("modoNumber");
   const precisionInput = document.getElementById("precision");
 
-  // Helpers numéricos
+
   const fmt = (x) => {
     const mode = modoNumber.value;
     const prec = Math.max(1, Math.min(12, parseInt(precisionInput.value || "6", 10)));
