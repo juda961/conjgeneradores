@@ -1,166 +1,71 @@
-/* --- Base --- */
-:root{
-  --azul:#1e90ff;
-  --gris-fondo:#d3d3d3;
-  --panel:#f4f4f4;
-  --nota:#fff8b5;
-  --borde: #e0e0e0;
-  --texto:#333;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0e0e0; /* Fondo gris */
+    margin: 0;
+    padding: 0;
 }
 
-*{ box-sizing:border-box; }
-
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color:var(--texto);
-  background:var(--gris-fondo);
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
 
-/* --- Contenedor principal --- */
-.container{
-  max-width: 980px;
-  margin: 32px auto;
-  padding: 24px;
-  background: var(--panel);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.12);
+h1 {
+    text-align: center;
+    color: #333;
 }
 
-/* --- Títulos --- */
-h1{
-  margin:0 0 14px 0;
-  text-align:center;
-  letter-spacing:.2px;
+.notas {
+    background: #fff3cd; /* Fondo amarillo */
+    padding: 10px;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
-h2{
-  margin:24px 0 10px 0;
-  border-bottom:2px solid var(--azul);
-  padding-bottom:6px;
+.section {
+    margin-bottom: 30px;
 }
 
-/* --- Notas --- */
-.notas{
-  background:var(--nota);
-  border-left:6px solid #ffcc00;
-  padding:12px 16px;
-  border-radius:8px;
-  margin-bottom:18px;
-}
-.notas ul{
-  margin:8px 0 0 18px;
+label {
+    font-weight: bold;
 }
 
-/* --- Campos e inputs --- */
-label{ font-weight:600; }
-textarea, input[type="number"], select{
-  width:100%;
-  margin-top:6px;
-  margin-bottom:12px;
-  padding:10px 12px;
-  border:1px solid var(--borde);
-  border-radius:8px;
-  font-size:16px;
-  background:white;
-  outline:none;
-}
-textarea{
-  resize: vertical;
-  min-height: 140px;
-  font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
+input {
+    margin-bottom: 10px;
+    padding: 6px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
 
-/* --- Layout pequeño de opciones --- */
-.fila{
-  display:flex;
-  gap:16px;
-  flex-wrap:wrap;
-}
-.campo{
-  flex:1 1 240px;
-}
-
-/* --- Botón --- */
-button{
-  background:var(--azul);
-  color:white;
-  border:none;
-  padding:12px 18px;
-  font-size:16px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:.15s transform ease, .2s background ease;
-}
-button:hover{ background:#1679d6; }
-button:active{ transform: translateY(1px); }
-
-/* --- Resultados/Pasos --- */
-.resultado{
-  display:none;        /* visible solo al calcular */
-  background:#f0f8ff;
-  border-left:5px solid var(--azul);
-  padding:12px 16px;
-  margin-top:14px;
-  border-radius:8px;
-  overflow-x:auto;
+button {
+    background: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 5px;
 }
 
-/* --- Etiquetas dentro del resumen --- */
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  font-size:12px;
-  background:#e7f1ff;
-  border:1px solid #cfe3ff;
-  margin-right:6px;
-}
-.badge.ok{ background:#eaffea; border-color:#c4f0c4; }
-.badge.no{ background:#ffecec; border-color:#ffc8c8; }
-
-/* --- Tablas de matrices --- */
-.tabla{
-  border-collapse: separate;
-  border-spacing: 0;
-  margin:10px 0 16px 0;
-  border:1px solid var(--borde);
-  border-radius:10px;
-  overflow:hidden;
-}
-.tabla th, .tabla td{
-  padding:8px 10px;
-  border-bottom:1px solid var(--borde);
-  font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
-  text-align:right;
-  min-width:64px;
-}
-.tabla tr:last-child td{ border-bottom:none; }
-.tabla thead th{
-  background:#eef6ff;
-  text-align:center;
-  font-weight:700;
+button:hover {
+    background: #0056b3;
 }
 
-/* --- Operaciones --- */
-.op{
-  font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace;
-  background:#fff;
-  border:1px dashed #dcdcdc;
-  padding:8px 10px;
-  border-radius:8px;
-  display:inline-block;
-  margin:6px 0;
+.resultado {
+    margin-top: 10px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    min-height: 20px;
 }
 
-/* --- Colores de estado --- */
-.text-ok{ color:#0b7a0b; font-weight:700; }
-.text-no{ color:#b10000; font-weight:700; }
-
-/* --- Código embebido --- */
-code{
-  background:#fff;
-  border:1px solid #ececec;
-  padding:2px 6px;
-  border-radius:6px;
+.infinito {
+    color: red;
+    font-weight: bold;
 }
