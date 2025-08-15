@@ -6,18 +6,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const modoNumber = document.getElementById("modoNumber");
   const precisionInput = document.getElementById("precision");
 
-  // --- FUNCION fmt CORREGIDA ---
+  // --- FUNCION fmt CORREGIDA PARA DECIMAL/FRACCIÓN ---
   const fmt = (x) => {
     const mode = modoNumber.value;
     const prec = Math.max(1, Math.min(12, parseInt(precisionInput.value || "6", 10)));
+    
     if (!isFinite(x)) return x > 0 ? "∞" : (x < 0 ? "−∞" : "NaN");
-
+    
     if (mode === "fraction") {
-      // Evitar fracciones raras para ceros
-      if (Math.abs(x) < 1e-12) return "0";
+      if (Math.abs(x) < 1e-12) return "0"; // evitar fracciones raras de 0
       try {
-        // Limitar denominador para que no salga gigante
-        return math.fraction(x).simplify({ maxDenominator: 100 }).toString();
+        return math.fraction(x).toFraction(true); // devuelve la fracción simplificada como string
       } catch {
         return Number(x).toFixed(prec);
       }
@@ -71,12 +70,25 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 0; i < rows; i++) {
         if (i === r) continue;
         const factor = A[i][c];
-        if (Math.abs(factor) > eps) { for (let j = 0; j < cols; j++) { A[i][j] -= factor * A[r][j]; if (Math.abs(A[i][j])<eps) A[i][j]=0; } snap(`R${i+1} := R${i+1} - (${fmt(factor)})·R${r+1}`); }
+        if (Math.abs(factor) > eps) { 
+          for (let j = 0; j < cols; j++) { 
+            A[i][j] -= factor * A[r][j]; 
+            if (Math.abs(A[i][j]) < eps) A[i][j] = 0; 
+          } 
+          snap(`R${i+1} := R${i+1} - (${fmt(factor)})·R${r+1}`); 
+        }
       }
       r++;
     }
     const pivotCols = [];
-    for (let c = 0; c < cols; c++) { let oneCount=0, anyOther=false; for (let i=0;i<rows;i++) { if(Math.abs(A[i][c]-1)<1e-9) oneCount++; else if(Math.abs(A[i][c])>1e-9) anyOther=true; } if(oneCount===1 && !anyOther) pivotCols.push(c); }
+    for (let c = 0; c < cols; c++) { 
+      let oneCount = 0, anyOther = false; 
+      for (let i = 0; i < rows; i++) { 
+        if (Math.abs(A[i][c]-1)<1e-9) oneCount++; 
+        else if(Math.abs(A[i][c])>1e-9) anyOther=true; 
+      } 
+      if(oneCount===1 && !anyOther) pivotCols.push(c); 
+    }
     return { R: A, rank: pivotCols.length, pivotCols, snapshots };
   }
 
@@ -98,10 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch(err){ resumenDiv.innerHTML=`<div class="op">Error: ${err.message}</div>`; resumenDiv.style.display="block"; }
   });
 
-  // --- NUEVO: actualizar formato si se cambia decimal/fracción ---
+  // --- ACTUALIZAR FORMATO SI CAMBIA DECIMAL/FRACCIÓN ---
   modoNumber.addEventListener("change", () => { 
     if(resumenDiv.innerHTML) btn.click(); // recalcula y actualiza visualización
   });
-
 });
-
