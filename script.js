@@ -6,17 +6,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const modoNumber = document.getElementById("modoNumber");
   const precisionInput = document.getElementById("precision");
 
-  function fmtNumber(x) {
+  // Formatea número según modo
+  const fmt = (x) => {
     const mode = modoNumber.value;
     const prec = Math.max(1, Math.min(12, parseInt(precisionInput.value || "6", 10)));
     if (!isFinite(x)) return x > 0 ? "∞" : (x < 0 ? "−∞" : "NaN");
     if (mode === "fraction") {
-      try { return math.fraction(x).toString(); }
-      catch { return Number(x).toFixed(prec); }
+      try {
+        return math.fraction(x).toString();
+      } catch {
+        return Number(x).toFixed(prec);
+      }
     }
     return Number(x).toFixed(prec);
-  }
+  };
 
+  // Parsea textarea en matriz con vectores como columnas
   function parseVectors(text) {
     const lines = text.split("\n").map(s => s.trim()).filter(s => s.length > 0);
     if (lines.length === 0) throw new Error("No ingresaste vectores.");
@@ -33,32 +38,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const m = cols[0].length;
     cols.forEach((c, i) => {
-      if (c.length !== m) {
-        throw new Error(`Todos los vectores deben tener ${m} componentes. Línea ${i+1} tiene ${c.length}.`);
-      }
+      if (c.length !== m) throw new Error(`Todos los vectores deben tener ${m} componentes. Línea ${i+1} tiene ${c.length}.`);
     });
 
     const nvec = cols.length;
-    const A = Array.from({length: m}, () => Array(nvec).fill(0));
+    const A = Array.from({ length: m }, () => Array(nvec).fill(0));
     for (let j = 0; j < nvec; j++) {
       for (let i = 0; i < m; i++) {
         A[i][j] = cols[j][i];
       }
     }
-    return {A, m, nvec, cols};
+    return { A, m, nvec, cols };
   }
 
   const clone = M => M.map(r => r.slice());
 
   function matrixToTable(M, headerLabel = "") {
     let html = '<table class="tabla">';
-    if (headerLabel) {
-      html += `<thead><tr><th colspan="${M[0].length}">${headerLabel}</th></tr></thead>`;
-    }
+    if (headerLabel) html += `<thead><tr><th colspan="${M[0].length}">${headerLabel}</th></tr></thead>`;
     html += "<tbody>";
     for (const row of M) {
       html += "<tr>";
-      for (const val of row) html += `<td>${fmtNumber(val)}</td>`;
+      for (const val of row) html += `<td>${fmt(val)}</td>`;
       html += "</tr>";
     }
     html += "</tbody></table>";
@@ -73,11 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const snapshots = [];
     const eps = 1e-12;
 
-    function snap(op) { snapshots.push({op, mat: clone(A)}); }
+    function snap(op) { snapshots.push({ op, mat: clone(A) }); }
 
     for (let c = 0; c < cols && r < rows; c++) {
       let piv = r;
-      for (let i = r+1; i < rows; i++) {
+      for (let i = r + 1; i < rows; i++) {
         if (Math.abs(A[i][c]) > Math.abs(A[piv][c])) piv = i;
       }
       if (Math.abs(A[piv][c]) < eps) continue;
@@ -99,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             A[i][j] -= factor * A[r][j];
             if (Math.abs(A[i][j]) < eps) A[i][j] = 0;
           }
-          snap(`R${i+1} := R${i+1} - (${fmtNumber(factor)})·R${r+1}`);
+          snap(`R${i+1} := R${i+1} - (${fmt(factor)})·R${r+1}`);
         }
       }
       r++;
@@ -114,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (oneCount === 1 && !anyOther) pivotCols.push(c);
     }
-    return {R: A, rank: pivotCols.length, pivotCols, snapshots};
+    return { R: A, rank: pivotCols.length, pivotCols, snapshots };
   }
 
   btn.addEventListener("click", () => {
@@ -124,11 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
     pasosDiv.innerHTML = "";
 
     try {
-      const {A, m, nvec} = parseVectors(ta.value.trim());
+      const { A, m, nvec } = parseVectors(ta.value.trim());
       let pasosHTML = `<h3>Matriz con vectores como columnas (R<sup>${m}</sup> × ${nvec})</h3>`;
       pasosHTML += matrixToTable(A, "Matriz inicial");
 
-      const {R, rank, pivotCols, snapshots} = rrefWithSteps(A);
+      const { R, rank, pivotCols, snapshots } = rrefWithSteps(A);
 
       snapshots.forEach((s, idx) => {
         pasosHTML += `<div class="op"><b>Paso ${idx+1}:</b> ${s.op}</div>`;
@@ -140,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const generaRn = (rank === m);
       const indepCols = pivotCols.map(j => j + 1);
+
       let resumenHTML = `<div class="badge">Vectores: ${nvec}</div>`;
       resumenHTML += `<div class="badge">Dimensión: ${m}</div>`;
       resumenHTML += `<div class="badge">Rango: ${rank}</div>`;
@@ -156,4 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
       resumenDiv.style.display = "block";
     }
   });
+
+  // Evento para actualizar formato si se cambia el modo decimal/fracción
+  modoNumber.addEventListener("change", () => {
+    if (resumenDiv.innerHTML) btn.click(); // recalcula y actualiza la visualización
+  });
 });
+
