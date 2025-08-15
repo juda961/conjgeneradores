@@ -6,22 +6,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const modoNumber = document.getElementById("modoNumber");
   const precisionInput = document.getElementById("precision");
 
-  // --- FUNCION fmt MODIFICADA ---
+  // --- FUNCION fmt CORREGIDA ---
   const fmt = (x) => {
     const mode = modoNumber.value;
     const prec = Math.max(1, Math.min(12, parseInt(precisionInput.value || "6", 10)));
     if (!isFinite(x)) return x > 0 ? "∞" : (x < 0 ? "−∞" : "NaN");
+
     if (mode === "fraction") {
+      // Evitar fracciones raras para ceros
+      if (Math.abs(x) < 1e-12) return "0";
       try {
-        return math.fraction(x).toString(); // Convierte decimal a fracción simplificada
+        // Limitar denominador para que no salga gigante
+        return math.fraction(x).simplify({ maxDenominator: 100 }).toString();
       } catch {
         return Number(x).toFixed(prec);
       }
     }
+
     return Number(x).toFixed(prec);
   };
 
-  // --- EL RESTO DEL CÓDIGO SE MANTIENE EXACTO ---
+  // --- FUNCIONES ORIGINALES ---
   function parseVectors(text) {
     const lines = text.split("\n").map(s => s.trim()).filter(s => s.length > 0);
     if (lines.length === 0) throw new Error("No ingresaste vectores.");
@@ -75,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { R: A, rank: pivotCols.length, pivotCols, snapshots };
   }
 
+  // --- BOTÓN COMPROBAR ---
   btn.addEventListener("click", () => {
     resumenDiv.style.display="none"; pasosDiv.style.display="none"; resumenDiv.innerHTML=""; pasosDiv.innerHTML="";
     try {
